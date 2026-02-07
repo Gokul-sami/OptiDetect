@@ -8,7 +8,7 @@ app = FastAPI()
 @app.post("/predict/leukocoria")
 async def predict(file: UploadFile = File(...)):
 
-    bytes_data = await file.read()
+    bytes_data = await file.read() 
 
     npimg = np.frombuffer(bytes_data, np.uint8)
     img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)

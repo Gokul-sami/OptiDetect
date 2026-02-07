@@ -1,0 +1,41 @@
+# Python
+*.py[cod]
+*$py.class
+*.so
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Model files (optional - uncomment if you don't want to track models)
+# *.keras
+# *.h5
+# *.pkl
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
