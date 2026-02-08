@@ -1,10 +1,23 @@
 import cv2
 import numpy as np
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from services.eraf_predictor import predict_from_array
 from services.squint_predictor import predict_squint_from_array
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+@app.get("/health")
+async def health():
+    return {"ok": True}
 
 @app.post("/predict/leukocoria")
 async def predict(file: UploadFile = File(...)):

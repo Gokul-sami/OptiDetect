@@ -39,16 +39,29 @@ export default function Result({ route, navigation }) {
         // Persist in background (do not block the UI)
         void (async () => {
           try {
+            console.log("[bg-save] start", { mode });
+            console.log("[bg-save] uploading image");
             const imageUrl = await uploadImage(uri);
+            if (!imageUrl) {
+              throw new Error("Background save: image upload returned empty URL");
+            }
+            console.log("[bg-save] uploaded image", { imageUrl });
             const isAbnormal = prediction.prediction === "LEUKOCORIA" || prediction.prediction === "SQUINT";
+            console.log("[bg-save] inserting test row", { isAbnormal });
             await saveTestResult({
               type: mode,
               result: isAbnormal,
               probability: prediction.probability || 0,
               image_url: imageUrl,
             });
+            console.log("[bg-save] done");
           } catch (e) {
-            console.error("Background save failed:", e);
+            console.error(
+              "Background save failed:",
+              e?.name,
+              e?.message,
+              e
+            );
           }
         })();
       } catch (e) {
