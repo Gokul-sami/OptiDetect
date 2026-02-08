@@ -1,74 +1,88 @@
-# Python
+# ===========================
+# BACKEND (Python)
+# ===========================
 *.py[cod]
 *$py.class
 *.so
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 
-# Virtual Environment
+# Python Virtual Environment
 venv/
 env/
 ENV/
 .venv/
 backend/venv/
 
-# IDE
+# Python Distribution / packaging
+*.egg-info/
+dist/
+build/
+
+# ===========================
+# FRONTEND (Node.js/Expo)
+# ===========================
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+web-build/
+expo-env.d.ts
+
+# Metro
+.metro-health-check*
+
+# React Native / compiled code
+dist/
+
+# ===========================
+# IDE & EDITOR
+# ===========================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# ===========================
+# OS & SYSTEM FILES
+# ===========================
 .DS_Store
 Thumbs.db
+*.pem
 
-# Environment variables
+# ===========================
+# ENVIRONMENT & SECRETS
+# ===========================
 .env
 .env.local
+.env*.local
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# Model files (optional - uncomment if you don't want to track models)
-# *.keras
-# *.h5
-# *.pkl
-
-# Distribution / packaging
-*.egg-info/
-dist/
-build/
-
-# Virtual environment
-venv/
-env/
-
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Model files (too large for git)
-*.h5
-*.pb
-*.ckpt
-*.weights
-*.pkl
-*.pth
-
-# Dataset folders
-dataset/
-data/
-*_images/
-
-# Logs and temp files
+# ===========================
+# LOGS & TEMP FILES
+# ===========================
 *.log
-.DS_Store
-.env
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 
-# Backend specific
-backend/venv/
-backend/__pycache__/
+# ===========================
+# NATIVE BUILDS
+# ===========================
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+/ios
+/android
+
+# ===========================
+# TYPESCRIPT
+# ===========================
+*.tsbuildinfo

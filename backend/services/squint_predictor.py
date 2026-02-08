@@ -96,6 +96,7 @@ def predict_squint_from_array(img):
 
     return {
         "prediction": "SQUINT" if is_squint else "NORMAL",
+        "probability": 1.0 if is_squint else 0.0,
         "distance_diff": abs(dl-dr),
         "angle": angle
     }
