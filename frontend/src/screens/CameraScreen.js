@@ -1,70 +1,80 @@
-import { Camera } from "expo-camera";
-import { useRef, useState, useEffect } from "react";
-import { View, Button, Alert } from "react-native";
-import { uploadImage, saveTestResult } from "../services/supabase";
-
-import { predictLeukocoria, predictSquint } from "../api/api";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import { useRef, useState } from "react";
+import { View, Button, Alert, Platform } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function CameraScreen({ route, navigation }) {
 
   const { mode } = route.params;
 
-  const cameraRef = useRef();
-  const [perm, setPerm] = useState(false);
+  const isFocused = useIsFocused();
 
-  useEffect(()=>{
-    (async ()=>{
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setPerm(status==="granted");
-    })();
-  },[]);
+  const cameraRef = useRef();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [capturing, setCapturing] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
 
   const capture = async () => {
     try {
+      if (capturing) return;
+
+      if (!cameraReady) {
+        Alert.alert("Please wait", "Camera is still starting up.");
+        return;
+      }
+
+      if (!permission?.granted) {
+        const res = await requestPermission();
+        if (!res.granted) {
+          Alert.alert("Permission required", "Camera permission is required to continue.");
+          return;
+        }
+      }
+
+      if (!cameraRef.current?.takePictureAsync) {
+        throw new Error("Camera not ready");
+      }
+
+      setCapturing(true);
       const photo = await cameraRef.current.takePictureAsync({
           quality:0.7,
-          flashMode: Camera.Constants.FlashMode.torch
+          skipProcessing: Platform.OS === "android",
+          // flash is controlled on the view; keep capture options minimal
       });
 
-      let result;
-
-      if(mode==="leukocoria")
-          result = await predictLeukocoria(photo.uri);
-      else
-          result = await predictSquint(photo.uri);
-
-      // upload to supabase storage
-      const imageUrl = await uploadImage(photo.uri);
-
-      // Determine if result is positive (abnormal condition detected)
-      const isAbnormal = result.prediction === "LEUKOCORIA" || result.prediction === "SQUINT";
-
-      // save to DB
-      await saveTestResult({
-          type: mode,
-          result: isAbnormal,
-          probability: result.probability || 0,
-          image_url: imageUrl
-      });
-
-      navigation.navigate("Result",{ result, uri:photo.uri });
+      // Navigate immediately; Result screen will call API and show loading.
+      navigation.navigate("Result", { uri: photo.uri, mode });
     } catch (error) {
       console.error("Capture error:", error);
-      Alert.alert("Error", error.message || "Failed to process image");
+      Alert.alert("Error", error?.message || String(error) || "Failed to process image");
+    } finally {
+      setCapturing(false);
     }
   };
 
-  if(!perm) return null;
+  if (!permission) return null;
+
+  if (!permission.granted) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", backgroundColor: "Blue", padding: 24 }}>
+        <Button title="Grant Camera Permission" onPress={requestPermission} />
+      </View>
+    );
+  }
 
   return (
     <View style={{flex:1}}>
-      <Camera
+      <CameraView
         ref={cameraRef}
         style={{flex:1}}
-        flashMode={Camera.Constants.FlashMode.torch}
+        enableTorch={isFocused && mode === "leukocoria"}
+        flash="off"
+        onCameraReady={() => setCameraReady(true)}
       />
 
-      <Button title="Capture" onPress={capture}/>
+      <View style={{ position: "absolute", left: 20, right: 20, bottom: 30 }}>
+        <Button title="Capture" onPress={capture} disabled={capturing || !cameraReady} />
+      </View>
     </View>
   );
 }

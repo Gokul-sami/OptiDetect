@@ -8,11 +8,13 @@ app = FastAPI()
 
 @app.post("/predict/leukocoria")
 async def predict(file: UploadFile = File(...)):
+    print("Received file for leukocoria:", file.filename)
     file_bytes = await file.read()
     return predict_from_array(file_bytes)
 
 @app.post("/predict/squint")
 async def predict_squint(file: UploadFile = File(...)):
+    print("Received file for squint:", file.filename)
     bytes_data = await file.read()
     npimg = np.frombuffer(bytes_data, np.uint8)
     img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)

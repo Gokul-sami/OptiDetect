@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE = "http://192.168.1.5:8000"; // CHANGE TO YOUR PC IP
+const BASE = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export const predictLeukocoria = async (imageUri) => {
   const form = new FormData();
